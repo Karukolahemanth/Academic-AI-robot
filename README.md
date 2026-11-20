@@ -174,22 +174,7 @@ docker restart academic_backend
 
 ## 🔐 Default Login Credentials
 
-> All users share the same default password: **`proctor123`**
-
-### HOD Account
-| Field | Value |
-|---|---|
-| Email | `bhupathirajuhini.22.csm@anits.edu.in` |
-| Password | `proctor123` |
-| Role | HOD |
-
-### Sample Proctor Accounts
-| Name | Email | Password |
-|---|---|---|
-| Sriharshini | `bhupathirajusriharshini.22.csm@anits.edu.in` | `proctor123` |
-| Dr Karun Kumar | `karun.kumar@anits.edu.in` | `proctor123` |
-| Mr D Satti Babu | `d.sattibabu@anits.edu.in` | `proctor123` |
-| Ms Swetha | `swetha@anits.edu.in` | `proctor123` |
+> Login credentials are managed by the system administrator. Use the email and password assigned to your account (HOD or Proctor) to log in.
 
 ---
 
@@ -328,7 +313,6 @@ Academic-AI-robot/
 
 | Name | Role | GitHub |
 |---|---|---|
-| Sri Harshini Bhupathiraju | Full Stack Developer | [@sriharshini02](https://github.com/sriharshini02) |
 | Karukola Hemanth | Full Stack Developer | [@Karukolahemanth](https://github.com/Karukolahemanth) |
 
 ---
