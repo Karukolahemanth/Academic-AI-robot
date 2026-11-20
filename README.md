@@ -316,6 +316,7 @@ Academic-AI-robot/
 | Karukola Hemanth | Full Stack Developer | [@Karukolahemanth](https://github.com/Karukolahemanth) |
 | Khasif | Full Stack Developer | [@khasif](https://github.com/khasif) |
 | Uttaravilli Geetika | Full Stack Developer | [@GeetikaUttaravilli](https://github.com/GeetikaUttaravilli) |
+| Moyya Hasini | Full Stack Developer | — |
 
 ---
 
