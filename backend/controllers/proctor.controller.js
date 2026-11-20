@@ -18,8 +18,8 @@ export const getProctorProfile = async (req, res) => {
   try {
     const proctorId = req.userId;
     const proctor = await User.findByPk(proctorId, {
-      attributes: ['user_id', 'name', 'email', 'role', 'created_at'], 
-      include: [{ model: StudentCore }] 
+      attributes: ['user_id', 'name', 'email', 'role', 'created_at'],
+      include: [{ model: StudentCore }]
     });
     if (!proctor) return res.status(404).json({ message: "Proctor not found" });
     res.json(proctor);
@@ -33,7 +33,7 @@ export const updateProctorProfile = async (req, res) => {
     const proctorId = req.userId;
     const { name, email, password } = req.body;
     const proctor = await User.findByPk(proctorId);
-    
+
     if (name) proctor.name = name;
     if (email) proctor.email = email;
     if (password && password.trim() !== "") {
@@ -60,8 +60,8 @@ export const getProctorStudents = async (req, res) => {
     const students = await db.StudentCore.findAll({
       where: { assigned_proctor_id: proctorId },
       include: [
-        { model: db.StudentPersonalInfo }, 
-        { model: db.StudentAttendance }, 
+        { model: db.StudentPersonalInfo },
+        { model: db.StudentAttendance },
         { model: db.StudentAcademicScore }
       ],
       order: [['roll_number', 'ASC']]
@@ -87,7 +87,7 @@ export const getProctorStudents = async (req, res) => {
 export const addTask = async (req, res) => {
   try {
     const { title, due_date, priority } = req.body;
-    
+
     const newTask = await db.ToDoTask.create({
       user_id: req.userId,
       title,
@@ -189,7 +189,7 @@ export const updateStudent = async (req, res) => {
 
 export const getStudentDetails = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     console.log(`🔍 Fetching SAFE details for Student ID: ${id}`);
 
     const includeOptions = [
@@ -209,13 +209,13 @@ export const getStudentDetails = async (req, res) => {
 
     // ✅ FIX 1: Correct CGPA Calculation (Use grade_points)
     const scores = student.student_academic_scores || [];
-    
+
     // Sum up points (check grade_points first, fallback to total_marks)
     const totalPoints = scores.reduce((sum, s) => sum + (parseFloat(s.grade_points || s.total_marks) || 0), 0);
-    
+
     // Calculate Average
     let calculatedGPA = scores.length ? (totalPoints / scores.length) : 0;
-    
+
     // Normalize: If GPA > 10 (e.g. 75), convert to 10-scale (7.5)
     if (calculatedGPA > 10) calculatedGPA = calculatedGPA / 10;
 
@@ -238,18 +238,18 @@ export const getStudentDetails = async (req, res) => {
       phone: personal.phone_number || "-",
       father_name: personal.father_name || "-",
       address: personal.address || "-",
-      
+
       gpa, // ✅ Now sends the correct GPA
       attendance_percentage: latestAttendance?.attendance_percentage || "0",
-      
+
       // ✅ FIX 2: Send grade_points to frontend
-      academic_scores: scores.map(s => ({ 
-          id: s.id, 
-          semester: s.semester, 
-          grade_points: s.grade_points, // Added this field
-          marks: s.total_marks 
+      academic_scores: scores.map(s => ({
+        id: s.id,
+        semester: s.semester,
+        grade_points: s.grade_points, // Added this field
+        marks: s.total_marks
       })),
-      
+
       extracurriculars: extracurriculars.map(e => ({ id: e.id, activity: e.activity_name, level: e.achievement_level, date: e.date }))
     });
 
