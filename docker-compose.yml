@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  # 1. Database Service (Unchanged)
+  # 1. MySQL Database
   mysqldb:
     image: mysql:8.0
     container_name: academic_mysql
@@ -15,8 +13,13 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uharshini", "-pharshini"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # 2. Backend Service (Add Volumes!)
+  # 2. Backend — FastAPI (Python 3.12)
   backend:
     build: ./backend
     container_name: academic_backend
@@ -31,14 +34,12 @@ services:
       JWT_SECRET: asdfghjkmnbvcxwertyuiovcxcvbn
       CLIENT_ORIGIN: http://localhost:3000
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     volumes:
       - ./backend:/app
-      - /app/node_modules
-    command: npm run dev
-    
 
-  # 3. Frontend Service (Add Volumes!)
+  # 3. Frontend — React/Vite served by Nginx
   frontend:
     build: ./frontend
     container_name: academic_frontend
@@ -46,12 +47,6 @@ services:
       - "3000:80"
     depends_on:
       - backend
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    # ✅ ADD THIS SECTION
-    # volumes:
-    #  - ./frontend:/app
-    #  - /app/node_modules
 
 volumes:
   mysql_data:

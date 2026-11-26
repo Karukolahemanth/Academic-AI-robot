@@ -1,17 +1,13 @@
-# backend/Dockerfile
-FROM node:22-alpine as build
+# FastAPI Backend — Dockerfile
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package*.json ./
-RUN npm install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the code
 COPY . .
 
-# Expose port
 EXPOSE 5000
 
-# Start command
-CMD ["npm", "start"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000", "--reload"]
