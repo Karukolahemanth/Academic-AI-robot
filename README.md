@@ -37,9 +37,9 @@
 │                                                             │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
 │  │   Frontend   │    │   Backend    │    │   Database   │  │
-│  │  React/Vite  │───▶│ Node/Express │───▶│    MySQL     │  │
+│  │  React/Vite  │───▶│   FastAPI    │───▶│    MySQL     │  │
 │  │  Port: 3000  │    │  Port: 5000  │    │  Port: 3307  │  │
-│  │  Nginx (prod)│    │  JWT Auth    │    │  Sequelize   │  │
+│  │  Nginx (prod)│    │  JWT Auth    │    │  SQLAlchemy  │  │
 │  └──────────────┘    └──────┬───────┘    └──────────────┘  │
 │                             │                               │
 │                    ┌────────▼────────┐                      │
@@ -91,10 +91,10 @@
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 18, Vite, Tailwind CSS, React Router |
-| **Backend** | Node.js, Express.js, Sequelize ORM |
+| **Frontend** | React 18, Vite, Tailwind CSS, React Router, Axios |
+| **Backend** | Python 3.12, FastAPI, Uvicorn, SQLAlchemy ORM, PyMySQL, Pydantic |
 | **Database** | MySQL 8.0 |
-| **Auth** | JWT (JSON Web Tokens) + bcryptjs |
+| **Auth** | JWT (`python-jose`, HS256) + `bcrypt` |
 | **Containerization** | Docker, Docker Compose |
 | **Web Server** | Nginx (production frontend serving) |
 | **Hardware** | Raspberry Pi (kiosk device) |
@@ -108,7 +108,7 @@ Make sure the following are installed on your machine:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (v20+)
 - [Git](https://git-scm.com/)
 
-> No Node.js or MySQL installation required — Docker handles everything!
+> No Python, Node.js, or MySQL installation required — Docker handles everything!
 
 ---
 
@@ -128,10 +128,10 @@ docker compose up --build -d
 ```
 
 This command will:
-- 📦 Pull `mysql:8.0`, `node:22-alpine`, and `nginx:stable-alpine` images
-- 🔨 Build the backend and frontend Docker images
+- 📦 Pull `mysql:8.0`, `python:3.12-slim`, `node:22-alpine`, and `nginx:stable-alpine` images
+- 🔨 Build the FastAPI backend and React frontend Docker images
 - 🚀 Start all 3 containers (`academic_mysql`, `academic_backend`, `academic_frontend`)
-- 🗄️ Automatically create all database tables via Sequelize sync
+- 🗄️ Automatically create all database tables via SQLAlchemy (`Base.metadata.create_all`)
 
 > ⏱️ **First run takes 3–5 minutes** (image downloads + npm installs). Subsequent runs start in seconds.
 
@@ -168,6 +168,7 @@ docker restart academic_backend
 |---|---|
 | 🌐 **Web App** | http://localhost:3000 |
 | ⚙️ **Backend API** | http://localhost:5000 |
+| 📚 **Swagger API Docs** | http://localhost:5000/docs |
 | 🗄️ **MySQL** | `localhost:3307` |
 
 ---
@@ -263,25 +264,23 @@ The HOD's dashboard automatically shows new visitors in the queue in real time.
 ```
 Academic-AI-robot/
 ├── backend/
-│   ├── config/
-│   │   └── db.config.js          # Database connection config
-│   ├── controllers/
-│   │   ├── auth.controller.js    # Login / Signup logic
-│   │   ├── bot.controller.js     # Kiosk API logic
-│   │   ├── hodStudents.controller.js
-│   │   ├── hodAvailability.controller.js
-│   │   ├── hodSettings.controller.js
-│   │   ├── proctor.controller.js
-│   │   └── proctorDashboard.controller.js
-│   ├── middleware/
-│   │   └── authJwt.js            # JWT verification middleware
 │   ├── models/
-│   │   └── index.js              # All Sequelize models & relationships
-│   ├── routes/                   # Express route definitions
-│   ├── scripts/                  # Data import scripts (CSV → DB)
-│   ├── Dockerfile
-│   ├── package.json
-│   └── server.js                 # Express app entry point
+│   │   ├── __init__.py
+│   │   └── models.py             # SQLAlchemy ORM models & relationships
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── auth.py               # Login / Signup endpoints
+│   │   ├── bot.py                # Kiosk API endpoints
+│   │   ├── hod.py                # HOD availability & profile
+│   │   ├── hod_students.py       # HOD department student queries
+│   │   ├── proctor.py            # Proctor dashboard, students, tasks & profile
+│   │   ├── todo.py               # To-Do task CRUD
+│   │   └── visit_logs.py         # Visitor queue & FSM status transitions
+│   ├── auth.py                   # JWT & bcrypt helpers + RBAC dependencies
+│   ├── database.py               # SQLAlchemy engine & session dependency
+│   ├── main.py                   # FastAPI app entry point & CORS
+│   ├── requirements.txt          # Python dependencies
+│   └── Dockerfile
 │
 ├── frontend/
 │   ├── src/
